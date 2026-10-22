@@ -60,37 +60,11 @@ Fonctionne aussi avec un dépôt privé.
 
 ### GitHub Pages
 
-1. Créer `.github/workflows/deploy.yml` :
-   ```yaml
-   name: Déploiement
-   on:
-     push:
-       branches: [main]
-   permissions:
-     contents: read
-     pages: write
-     id-token: write
-   jobs:
-     deploy:
-       runs-on: ubuntu-latest
-       environment:
-         name: github-pages
-       steps:
-         - uses: actions/checkout@v4
-         - uses: actions/setup-node@v4
-           with:
-             node-version: 22
-             cache: npm
-         - run: npm ci
-         - run: npm test
-         - run: npm run build
-         - uses: actions/upload-pages-artifact@v3
-           with:
-             path: dist
-         - uses: actions/deploy-pages@v4
-   ```
-2. Dans le dépôt : *Settings → Pages → Source : GitHub Actions*.
-3. L'application est publiée sur `https://<utilisateur>.github.io/<dépôt>/`.
+Le workflow `.github/workflows/deploy.yml` lance les tests, compile et publie l'application à chaque push sur `main`.
+
+1. Une seule fois : dans le dépôt, *Settings → Pages → Build and deployment → Source : GitHub Actions*.
+2. Pousser sur `main` (ou relancer le workflow depuis l'onglet *Actions*).
+3. L'application est publiée sur `https://<utilisateur>.github.io/<dépôt>/`, ici https://ccdrik.github.io/ts-quiz/.
 
 GitHub Pages gratuit nécessite un dépôt **public** (sinon, utiliser Vercel).
 
