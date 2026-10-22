@@ -4,7 +4,7 @@ import { fillSnippet, parseSnippet, slotIndices } from "../lib/snippet";
 import { ALL_QUESTIONS, ALL_TERMS, TERM_BY_ID, THEMES } from "./index";
 
 /** Minimum de questions par thème. */
-const MIN_QUESTIONS_PER_THEME = 10;
+const MIN_QUESTIONS_PER_THEME = 100;
 
 describe("intégrité du contenu", () => {
   it("identifiants de questions uniques et préfixés par le thème", () => {
