@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { fillSnippet, parseSnippet, slotIndices } from "../lib/snippet";
 import { ALL_QUESTIONS, ALL_TERMS, TERM_BY_ID, THEMES } from "./index";
 
-/** Minimum de questions par thème (relevé à 10 avec le contenu complet). */
-const MIN_QUESTIONS_PER_THEME = 3;
+/** Minimum de questions par thème. */
+const MIN_QUESTIONS_PER_THEME = 10;
 
 describe("intégrité du contenu", () => {
   it("identifiants de questions uniques et préfixés par le thème", () => {

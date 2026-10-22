@@ -9,7 +9,7 @@ export const questions: Question[] = [
     prompt: "Vrai ou faux ?",
     statement:
       "Un tableau déclaré avec `const` peut quand même être modifié, par exemple avec `push`.",
-    code: { source: 'const scores = [10, 12];\nscores.push(15);' },
+    code: { source: "const scores = [10, 12];\nscores.push(15);" },
     answer: true,
     explanation:
       "`const` interdit la réaffectation de la variable, pas la modification de l'objet qu'elle référence. Pour un tableau non modifiable, utilise `readonly` ou `as const`.",
@@ -46,6 +46,196 @@ export const questions: Question[] = [
     explanation:
       "Une `const` ne pourra jamais changer : TypeScript infère le type littéral `\"Bonjour\"`, plus précis que `string`. Avec `let`, le type serait élargi à `string`.",
     example: 'let salut = "Bonjour"; // type : string',
-    glossary: ["constante", "type-litteral"],
+    glossary: ["constante", "type-litteral", "inference"],
+  },
+  {
+    id: "bases-04",
+    theme: "bases",
+    format: "notion",
+    type: "blank",
+    prompt: "Complète pour parcourir les valeurs du tableau.",
+    template: "const notes = [12, 15, 9];\nfor (const n {{0}} notes) {\n  console.log(n);\n}",
+    blanks: [["of"]],
+    explanation:
+      "`for...of` parcourt les valeurs d'un tableau : `n` vaut 12, puis 15, puis 9. `for...in` donnerait les indices sous forme de chaînes.",
+    glossary: ["for-of-in", "boucle"],
+  },
+  {
+    id: "bases-05",
+    theme: "bases",
+    format: "notion",
+    type: "mcq",
+    prompt: "Que vaut `volume` ?",
+    code: { source: "const reglage: number | null = 0;\nconst volume = reglage ?? 50;" },
+    choices: ["0", "50", "null", "undefined"],
+    correct: 0,
+    explanation:
+      "`??` ne remplace que `null` et `undefined`. `0` est une vraie valeur, donc `volume` vaut `0`. Avec `||`, on aurait obtenu `50`, car `0` est falsy.",
+    example: "const reglage: number | null = 0;\nconst avecOu = reglage || 50; // 50",
+    glossary: ["nullish", "operateurs-logiques", "truthy-falsy"],
+  },
+  {
+    id: "bases-06",
+    theme: "bases",
+    format: "notion",
+    type: "truefalse",
+    prompt: "Vrai ou faux ?",
+    statement: "En JavaScript, l'expression `\"5\" == 5` vaut `true`.",
+    answer: true,
+    explanation:
+      "`==` convertit les types avant de comparer : la chaîne `\"5\"` devient le nombre `5`. `===` ne convertit pas et renverrait `false` : utilise toujours `===`.",
+    glossary: ["egalite-stricte"],
+  },
+  {
+    id: "bases-07",
+    theme: "bases",
+    format: "nommer",
+    type: "free",
+    prompt: "Comment s'appelle le symbole surligné ?",
+    code: { source: "const prix = 10;\nconst quantite = 3;\nconst total = prix [[*]] quantite;" },
+    answers: ["opérateur", "un opérateur", "opérateur arithmétique", "opérateur de multiplication", "multiplication"],
+    explanation:
+      "`*` est un opérateur arithmétique ; `prix` et `quantite` sont ses opérandes. Ensemble, ils forment une expression qui produit une valeur.",
+    glossary: ["operateur-operande", "expression-instruction"],
+  },
+  {
+    id: "bases-08",
+    theme: "bases",
+    format: "nommer",
+    type: "free",
+    prompt: "Comment s'appellent `prix` et `quantite` par rapport à l'élément surligné ?",
+    code: { source: "const prix = 10;\nconst quantite = 3;\nconst total = prix [[*]] quantite;" },
+    answers: ["opérandes", "des opérandes", "les opérandes", "opérande"],
+    explanation:
+      "Les valeurs sur lesquelles agit un opérateur sont ses opérandes. `*` est un opérateur binaire : il a deux opérandes.",
+    glossary: ["operateur-operande"],
+  },
+  {
+    id: "bases-09",
+    theme: "bases",
+    format: "erreur",
+    type: "mcq",
+    prompt: "Pourquoi ce code ne compile-t-il pas ?",
+    code: {
+      source:
+        'function verifier(age: number) {\n  if (age >= 18) {\n    let message = "majeur";\n  }\n  return message;\n}',
+    },
+    choices: [
+      "`message` a une portée de bloc : elle n'existe pas en dehors du `if`",
+      "Il manque un `else`",
+      "Une fonction ne peut pas renvoyer une chaîne",
+      "`let` ne peut pas contenir de chaîne",
+    ],
+    correct: 0,
+    explanation:
+      "`let` et `const` ont une portée de bloc : `message` disparaît après l'accolade fermante du `if`. Déclare-la avant le `if` pour l'utiliser ensuite.",
+    example:
+      'function verifier(age: number) {\n  let message = "mineur";\n  if (age >= 18) {\n    message = "majeur";\n  }\n  return message;\n}',
+    glossary: ["portee", "variable"],
+  },
+  {
+    id: "bases-10",
+    theme: "bases",
+    format: "inference",
+    type: "free",
+    prompt: "Quel est le type inféré de `statut` ?",
+    code: { source: 'declare const age: number;\nconst statut = age >= 18 ? "majeur" : "mineur";' },
+    answers: ['"majeur" | "mineur"', '"mineur" | "majeur"'],
+    explanation:
+      "Le ternaire peut produire l'une ou l'autre chaîne : TypeScript infère l'union des deux types littéraux. Avec `let`, on aurait obtenu `string`.",
+    glossary: ["ternaire", "type-litteral", "union"],
+  },
+  {
+    id: "bases-11",
+    theme: "bases",
+    format: "notion",
+    type: "truefalse",
+    prompt: "Vrai ou faux ?",
+    statement: "Ce code affiche « vide ».",
+    code: { source: 'const nom = "";\nif (nom) {\n  console.log("rempli");\n} else {\n  console.log("vide");\n}' },
+    answer: true,
+    explanation:
+      "La chaîne vide est falsy : la condition est fausse et c'est le `else` qui s'exécute. Les autres valeurs falsy sont `false`, `0`, `NaN`, `null` et `undefined`.",
+    glossary: ["truthy-falsy", "condition"],
+  },
+  {
+    id: "bases-12",
+    theme: "bases",
+    format: "notion",
+    type: "blank",
+    prompt: "Complète pour lire la ville sans erreur si `utilisateur` ou `adresse` est absent.",
+    template:
+      "interface Utilisateur {\n  adresse?: { ville: string };\n}\ndeclare const utilisateur: Utilisateur | undefined;\nconst ville = utilisateur{{0}}adresse{{1}}ville;",
+    blanks: [["?."], ["?."]],
+    explanation:
+      "Le chaînage optionnel `?.` s'arrête et renvoie `undefined` dès qu'une valeur vaut `null` ou `undefined`. Ici, `ville` est de type `string | undefined`.",
+    glossary: ["chainage-optionnel", "nullish"],
+  },
+  {
+    id: "bases-13",
+    theme: "bases",
+    format: "notion",
+    type: "mcq",
+    prompt: "Que vaut `a.score` à la fin ?",
+    code: { source: "const a = { score: 1 };\nconst b = a;\nb.score = 99;" },
+    choices: ["99", "1", "undefined"],
+    correct: 0,
+    explanation:
+      "`b = a` copie la référence, pas l'objet : `a` et `b` désignent le même objet. Pour une copie indépendante, écris `const b = { ...a }`.",
+    example: "const a = { score: 1 };\nconst b = { ...a };\nb.score = 99; // a.score vaut toujours 1",
+    glossary: ["reference-copie", "mutabilite"],
+  },
+  {
+    id: "bases-14",
+    theme: "bases",
+    format: "nommer",
+    type: "free",
+    prompt:
+      "La déclaration surlignée porte le même nom qu'une variable extérieure. Comment appelle-t-on ce phénomène ?",
+    code: {
+      source: 'const nom = "global";\nfunction afficher() {\n  const [[nom]] = "local";\n  return nom;\n}',
+    },
+    answers: ["shadowing", "masquage", "le shadowing", "masquage de variable", "le masquage"],
+    explanation:
+      "La variable locale masque la variable globale du même nom dans la fonction : c'est le shadowing. `afficher()` renvoie `\"local\"`.",
+    glossary: ["shadowing", "portee"],
+  },
+  {
+    id: "bases-15",
+    theme: "bases",
+    format: "notion",
+    type: "truefalse",
+    prompt: "Vrai ou faux ?",
+    statement: "Cette boucle affiche « pomme » puis « kiwi ».",
+    code: { source: 'const fruits = ["pomme", "kiwi"];\nfor (const i in fruits) {\n  console.log(i);\n}' },
+    answer: false,
+    explanation:
+      "`for...in` parcourt les clés : la boucle affiche les indices `\"0\"` et `\"1\"` (des chaînes). Pour les valeurs, utilise `for...of`.",
+    glossary: ["for-of-in", "boucle"],
+  },
+  {
+    id: "bases-16",
+    theme: "bases",
+    format: "notion",
+    type: "mcq",
+    prompt: "Qu'affiche ce code JavaScript ?",
+    code: { source: "console.log(x);\nvar x = 5;", check: false },
+    choices: ["undefined", "5", "Une erreur ReferenceError"],
+    correct: 0,
+    explanation:
+      "Avec `var`, la déclaration est remontée (hoisting) mais pas l'affectation : `x` existe déjà et vaut `undefined`. Avec `let`, on obtiendrait une `ReferenceError`.",
+    glossary: ["hoisting", "variable"],
+  },
+  {
+    id: "bases-17",
+    theme: "bases",
+    format: "notion",
+    type: "mcq",
+    prompt: "Laquelle de ces lignes est une instruction et non une expression ?",
+    choices: ["`if (x > 0) { }`", "`x > 0`", "`x * 2`", "`f(x)`"],
+    correct: 0,
+    explanation:
+      "Une expression produit une valeur ; une instruction effectue une action. `if` est une instruction : on ne peut pas écrire `const y = if (...)`.",
+    glossary: ["expression-instruction"],
   },
 ];

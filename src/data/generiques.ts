@@ -14,7 +14,7 @@ export const questions: Question[] = [
     explanation:
       "`<T>` déclare un paramètre de type : `T` sera remplacé par le type réel à chaque appel. `premier([1, 2])` renvoie un `number | undefined`.",
     example: "function premier<T>(liste: T[]): T | undefined {\n  return liste[0];\n}\nconst n = premier([1, 2]); // number | undefined",
-    glossary: ["generique"],
+    glossary: ["generique", "parametre-type"],
   },
   {
     id: "generiques-02",
@@ -28,7 +28,7 @@ export const questions: Question[] = [
     explanation:
       "`ReturnType<F>` extrait le type de retour d'un type fonction. Pour obtenir `number`, il faudrait en plus `Awaited<R>`.",
     example: "type R = ReturnType<() => Promise<number>>; // Promise<number>\ntype V = Awaited<R>; // number",
-    glossary: ["utility-types"],
+    glossary: ["return-type-parameters", "awaited"],
   },
   {
     id: "generiques-03",
@@ -47,5 +47,255 @@ export const questions: Question[] = [
       "Sans contrainte, `T` peut être n'importe quel type. On ajoute une contrainte avec `extends` pour garantir la propriété.",
     example: "function longueur<T extends { length: number }>(x: T): number {\n  return x.length;\n}",
     glossary: ["contrainte", "generique"],
+  },
+  {
+    id: "generiques-04",
+    theme: "generiques",
+    format: "inference",
+    type: "free",
+    prompt: "Que vaut le type `Cle` ?",
+    code: { source: "interface User {\n  nom: string;\n  age: number;\n}\ntype Cle = keyof User;" },
+    answers: ['"nom" | "age"', '"age" | "nom"'],
+    explanation:
+      "`keyof` produit l'union des clés d'un type objet, sous forme de types littéraux.",
+    glossary: ["keyof", "union"],
+  },
+  {
+    id: "generiques-05",
+    theme: "generiques",
+    format: "notion",
+    type: "mcq",
+    prompt: "À quel type `Apercu` est-il équivalent ?",
+    code: {
+      source:
+        'interface User {\n  id: number;\n  nom: string;\n  email: string;\n}\ntype Apercu = Pick<User, "id" | "nom">;',
+    },
+    choices: [
+      "`{ id: number; nom: string }`",
+      "`{ email: string }`",
+      '`"id" | "nom"`',
+      "`{ id?: number; nom?: string; email?: string }`",
+    ],
+    correct: 0,
+    explanation:
+      "`Pick<T, K>` ne garde que les propriétés listées. Son contraire, `Omit<User, \"email\">`, donnerait ici le même résultat.",
+    glossary: ["pick-omit", "utility-types"],
+  },
+  {
+    id: "generiques-06",
+    theme: "generiques",
+    format: "notion",
+    type: "blank",
+    prompt: "Complète pour obtenir toutes les propriétés de `User` sauf `motDePasse`.",
+    template:
+      'interface User {\n  id: number;\n  nom: string;\n  motDePasse: string;\n}\ntype Public = {{0}}<User, "motDePasse">;',
+    blanks: [["Omit"]],
+    caseSensitive: true,
+    explanation:
+      "`Omit<T, K>` retire les propriétés `K`. C'est pratique pour exposer un objet sans ses champs sensibles.",
+    glossary: ["pick-omit"],
+  },
+  {
+    id: "generiques-07",
+    theme: "generiques",
+    format: "inference",
+    type: "free",
+    prompt: "Que vaut le type `T` ?",
+    code: { source: 'type T = Exclude<"a" | "b" | "c", "a">;' },
+    answers: ['"b" | "c"', '"c" | "b"'],
+    explanation:
+      "`Exclude` retire d'une union les membres assignables au second argument. Il reste `\"b\" | \"c\"`.",
+    glossary: ["exclude-extract", "union"],
+  },
+  {
+    id: "generiques-08",
+    theme: "generiques",
+    format: "nommer",
+    type: "free",
+    prompt: "Comment s'appelle l'élément surligné ?",
+    code: { source: "function emballer<[[T]]>(valeur: T): { valeur: T } {\n  return { valeur };\n}" },
+    answers: ["paramètre de type", "un paramètre de type", "type paramètre", "paramètre générique", "générique", "type générique"],
+    explanation:
+      "`T` est un paramètre de type : un type fourni à l'appel, souvent par inférence. `emballer(3)` renvoie `{ valeur: number }`.",
+    glossary: ["parametre-type", "generique"],
+  },
+  {
+    id: "generiques-09",
+    theme: "generiques",
+    format: "erreur",
+    type: "mcq",
+    prompt: "Pourquoi l'appel de la dernière ligne ne compile-t-il pas ?",
+    code: {
+      source:
+        'function lire<T, K extends keyof T>(obj: T, cle: K): T[K] {\n  return obj[cle];\n}\nlire({ nom: "Léa" }, "age");',
+    },
+    choices: [
+      '`"age"` n\'est pas une clé de l\'objet : `K` doit appartenir à `keyof T`',
+      "`T[K]` n'est pas un type de retour valide",
+      "Il faut préciser les types : `lire<object, string>(...)`",
+    ],
+    correct: 0,
+    explanation:
+      "La contrainte `K extends keyof T` limite `cle` aux clés de l'objet, ici `\"nom\"`. C'est ce qui rend la fonction sûre : impossible de lire une propriété inexistante.",
+    glossary: ["keyof", "contrainte", "indexed-access"],
+  },
+  {
+    id: "generiques-10",
+    theme: "generiques",
+    format: "inference",
+    type: "free",
+    prompt: "Que vaut le type `Nom` ?",
+    code: { source: 'interface User {\n  nom: string;\n  age: number;\n}\ntype Nom = User["nom"];' },
+    answers: ["string"],
+    explanation:
+      "L'indexed access `User[\"nom\"]` récupère le type de la propriété `nom`. `User[\"nom\" | \"age\"]` donnerait `string | number`.",
+    glossary: ["indexed-access"],
+  },
+  {
+    id: "generiques-11",
+    theme: "generiques",
+    format: "notion",
+    type: "blank",
+    prompt: "Complète ce mapped type qui rend toutes les propriétés optionnelles.",
+    template: "type Optionnel<T> = {\n  [K in {{0}} T]?: T[K];\n};",
+    blanks: [["keyof"]],
+    explanation:
+      "`[K in keyof T]` parcourt chaque clé de `T` ; le `?` rend chaque propriété optionnelle. C'est exactement la définition de `Partial<T>`.",
+    glossary: ["mapped-types", "keyof", "partial"],
+  },
+  {
+    id: "generiques-12",
+    theme: "generiques",
+    format: "inference",
+    type: "free",
+    prompt: "Que vaut le type `R` ?",
+    code: { source: 'type EstString<T> = T extends string ? "oui" : "non";\ntype R = EstString<42>;' },
+    answers: ['"non"'],
+    explanation:
+      "`42` n'est pas assignable à `string` : le conditional type choisit la branche « sinon », `\"non\"`.",
+    glossary: ["conditional-types"],
+  },
+  {
+    id: "generiques-13",
+    theme: "generiques",
+    format: "notion",
+    type: "blank",
+    prompt: "Complète pour extraire le type des éléments d'un tableau.",
+    template: "type Element<T> = T extends ({{0}} U)[] ? U : never;\ntype E = Element<string[]>; // string",
+    blanks: [["infer"]],
+    explanation:
+      "`infer U` demande à TypeScript de déduire `U` pendant la comparaison avec `U[]`. Pour `string[]`, `U` vaut `string`.",
+    glossary: ["infer", "conditional-types"],
+  },
+  {
+    id: "generiques-14",
+    theme: "generiques",
+    format: "inference",
+    type: "free",
+    prompt: "Que vaut le type `Gestionnaire` ?",
+    code: { source: 'type Evenement = "Click" | "Focus";\ntype Gestionnaire = `on${Evenement}`;' },
+    answers: ['"onClick" | "onFocus"', '"onFocus" | "onClick"'],
+    caseSensitive: true,
+    explanation:
+      "Un template literal type appliqué à une union génère une chaîne pour chaque membre.",
+    glossary: ["template-literal-types", "union"],
+  },
+  {
+    id: "generiques-15",
+    theme: "generiques",
+    format: "notion",
+    type: "truefalse",
+    prompt: "Vrai ou faux ?",
+    statement: "`Partial<Commande>` rend aussi optionnelles les propriétés de l'objet imbriqué `client`.",
+    code: { source: "interface Commande {\n  id: number;\n  client: { nom: string; email: string };\n}\ntype Brouillon = Partial<Commande>;" },
+    answer: false,
+    explanation:
+      "`Partial` n'agit qu'au premier niveau : `client` devient optionnel, mais s'il est présent, `nom` et `email` restent obligatoires.",
+    glossary: ["partial", "mapped-types"],
+  },
+  {
+    id: "generiques-16",
+    theme: "generiques",
+    format: "inference",
+    type: "free",
+    prompt: "Que vaut le type `P` ?",
+    code: { source: "type P = Parameters<(a: string, b: number) => void>;" },
+    answers: ["[a: string, b: number]", "[string, number]"],
+    explanation:
+      "`Parameters<F>` donne le tuple des types des paramètres. TypeScript l'affiche avec les noms : `[a: string, b: number]`.",
+    glossary: ["return-type-parameters", "tuple"],
+  },
+  {
+    id: "generiques-17",
+    theme: "generiques",
+    format: "inference",
+    type: "free",
+    prompt: "Que vaut le type `V` ?",
+    code: { source: "type V = Awaited<Promise<Promise<string>>>;" },
+    answers: ["string"],
+    explanation:
+      "`Awaited` déballe récursivement les `Promise`, comme le ferait `await` : il reste `string`.",
+    glossary: ["awaited", "promise"],
+  },
+  {
+    id: "generiques-18",
+    theme: "generiques",
+    format: "inference",
+    type: "mcq",
+    prompt: "Que vaut le type `T` ?",
+    code: { source: "type T = NonNullable<string | null | undefined>;" },
+    choices: ["`string`", "`string | null`", "`never`", "`undefined`"],
+    correct: 0,
+    explanation:
+      "`NonNullable` retire `null` et `undefined` de l'union.",
+    glossary: ["non-nullable", "exclude-extract"],
+  },
+  {
+    id: "generiques-19",
+    theme: "generiques",
+    format: "notion",
+    type: "truefalse",
+    prompt: "Vrai ou faux ?",
+    statement: "Avec cette déclaration, on peut écrire `Reponse` sans argument de type.",
+    code: { source: "interface Reponse<T = unknown> {\n  data: T;\n  status: number;\n}" },
+    answer: true,
+    explanation:
+      "`T = unknown` donne une valeur par défaut au paramètre de type : `Reponse` équivaut à `Reponse<unknown>`.",
+    example: "interface Reponse<T = unknown> {\n  data: T;\n}\nconst r: Reponse = { data: 1 };\nconst s: Reponse<string> = { data: \"ok\" };",
+    glossary: ["type-defaut", "parametre-type"],
+  },
+  {
+    id: "generiques-20",
+    theme: "generiques",
+    format: "notion",
+    type: "mcq",
+    prompt: "La dernière affectation est-elle acceptée ?",
+    code: {
+      source:
+        "type Animal = { nom: string };\ntype Chat = Animal & { miauler(): void };\nconst chats: Chat[] = [];\nconst animaux: Animal[] = chats;",
+    },
+    choices: [
+      "Oui : un tableau de `Chat` peut servir de tableau d'`Animal` (covariance)",
+      "Non : `Chat[]` et `Animal[]` sont des types différents",
+      "Seulement avec `as Animal[]`",
+    ],
+    correct: 0,
+    explanation:
+      "Un `Chat` est un `Animal`, donc une liste de chats est une liste d'animaux : les tableaux sont covariants. C'est pratique mais pas totalement sûr si on ajoute ensuite un chien dans `animaux`.",
+    glossary: ["variance", "typage-structurel"],
+  },
+  {
+    id: "generiques-21",
+    theme: "generiques",
+    format: "notion",
+    type: "truefalse",
+    prompt: "Vrai ou faux ?",
+    statement: "Une fonction `(a: Animal) => void` peut être utilisée là où l'on attend une fonction `(c: Chat) => void`.",
+    answer: true,
+    explanation:
+      "Une fonction capable de traiter n'importe quel animal sait aussi traiter un chat : les paramètres de fonction sont contravariants. L'inverse serait faux.",
+    example:
+      "type Animal = { nom: string };\ntype Chat = Animal & { miauler(): void };\nconst caresser = (a: Animal) => console.log(a.nom);\nconst pourChat: (c: Chat) => void = caresser;",
+    glossary: ["variance"],
   },
 ];
